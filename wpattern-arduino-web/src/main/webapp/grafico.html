@@ -1,0 +1,46 @@
+<html>
+<head>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  var dados, grafico, opcoes = { width: 240, height: 240, max: 180, minorTicks: 10 };
+  
+  function init() {
+    dados = google.visualization.arrayToDataTable([
+      ['Label', 'Value'],
+      ['Servo', 0]]);
+    grafico = new google.visualization.Gauge(document.getElementById('grafico'));
+    grafico.draw(dados, opcoes);
+
+    var websocket = new WebSocket("ws://localhost:8080/websocket");
+    websocket.onmessage = function(evt) { onMessage(evt); }
+    websocket.onopen = function(evt) { onOpen(evt); }
+    websocket.onclose = function(evt) { onClose(evt); }
+  }
+	
+  function onMessage(evt) {
+	  dados.setValue(0, 1, evt.data);
+	  grafico.draw(dados, opcoes);
+  }
+
+  function onOpen(evt) {
+	  document.getElementById("saida").innerHTML = "Conectado";
+  }
+
+  function onClose(evt) {
+	  document.getElementById("saida").innerHTML = "Desconectado";
+  }
+
+  google.load("visualization", "1", {packages:["gauge"]});
+  google.setOnLoadCallback(init);
+  
+  window.addEventListener("load", init, false);
+</script>
+
+<title>WPattern Arduino Web</title>
+</head>
+
+<body>
+	<div id="saida"></div>
+	<div id="grafico" style="width: 400px; height: 400px;"></div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<html>
+<head>
+<script type="text/javascript">
+  var websocket;
+
+  function init() {
+	websocket = new WebSocket("ws://localhost:8080/websocket");
+	
+    websocket.onmessage = function(evt) { onMessage(evt); }
+    websocket.onopen = function(evt) { onOpen(evt); }
+    websocket.onclose = function(evt) { onClose(evt); }
+  }
+  
+  function onMessage(evt) {
+    document.getElementById("servo").innerHTML = "Servo: " + evt.data;
+  }
+
+  function onOpen(evt) {
+    document.getElementById("saida").innerHTML = "Conectado";
+  }
+
+  function onClose(evt) {
+    document.getElementById("saida").innerHTML = "Desconectado";
+  }
+  
+  function ligarLed() {
+    websocket.send("l");
+  }
+
+  function desligarLed() {
+    websocket.send("d");
+  }
+
+  window.addEventListener("load", init, false);
+</script>
+
+<title>WPattern Arduino Web</title>
+</head>
+
+<body>
+	<input onclick="ligarLed();" type="button" value="Ligar LED"> <br />
+	<input onclick="desligarLed();" type="button" value="Desligar LED">	<br />
+	<div id="saida"></div>
+	<div id="servo"></div>
+</body>
+</html>
